@@ -16,7 +16,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     var latitud : String = ""
     var longitud : String = ""
     var exacHoriz : String = ""
-    
+    var distancia : Int = 0
+    let radioRegion: CLLocationDistance = 500
     
     @IBOutlet weak var mostrarLatitud: UILabel!
     @IBOutlet weak var mostrarLongitud: UILabel!
@@ -35,6 +36,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         manejador.desiredAccuracy = kCLLocationAccuracyBest
         manejador.requestWhenInUseAuthorization()
         manejador.startUpdatingLocation()
+        manejador.distanceFilter = 50
+        
+        
+        let coordinateRegion = MKCoordinateRegionMakeWithDistance((manejador.location?.coordinate)!, radioRegion, radioRegion)
+        mapa.setRegion(coordinateRegion, animated: true)
         
     }
 
@@ -76,7 +82,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         pin.coordinate = coord2D
         mapa.addAnnotation(pin)
         pin.title = "Latitud: \(latitud), Longitud \(longitud)" //titulo
-        pin.subtitle="Distancia Recorrida: " //subtitulo
+        pin.subtitle="Distancia Recorrida: \(distancia)" //subtitulo
+        distancia += 50
+        
         
     }
     
