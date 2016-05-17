@@ -66,8 +66,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         
         
         // amplitud
-        let myLatDelta = 0.05
-        let myLongDelta = 0.05
+        let myLatDelta = 0.005
+        let myLongDelta = 0.005
         let myAmplitud = MKCoordinateSpan(latitudeDelta: myLatDelta, longitudeDelta: myLongDelta)
         
         let myRegion = MKCoordinateRegion(center: coord2D, span: myAmplitud)
