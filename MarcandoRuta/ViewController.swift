@@ -24,6 +24,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     
     
     @IBOutlet weak var mapa: MKMapView!
+    private var mapavista : MKMapView!
     
     private let manejador = CLLocationManager() //definir manejador
 
@@ -33,6 +34,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         manejador.delegate = self
         manejador.desiredAccuracy = kCLLocationAccuracyBest
         manejador.requestWhenInUseAuthorization()
+        manejador.startUpdatingLocation()
         
     }
 
@@ -40,25 +42,44 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) { // solicitar autorizacion
         if status == .AuthorizedWhenInUse{
             manejador.startUpdatingLocation() // GPS
-            //manejador.startUpdatingHeading() // Brujula
+            mapa.showsUserLocation = true // muestra ubicacion del usuario en el mapa---
+            
         }else{
             manejador.stopUpdatingLocation() // GPS
-            //manejador.stopUpdatingHeading() // brujula
+            mapa.showsUserLocation = false
+            
         }
     }
     
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) { // metodo que recibe las lecturas del GPS
-        mostrarLatitud.text =  "\(manager.location!.coordinate.latitude)" // latitud
-        mostrarLongitud.text = "\(manager.location!.coordinate.longitude)" // longitud
-        exacHoriz = "\(manager.location!.horizontalAccuracy)" // exactitud horizontal
+
+        let miCoordenada = locations[locations.count - 1] // obtiene mas reciente coordenada
+        let latitud = miCoordenada.coordinate.latitude
+        let longitud = miCoordenada.coordinate.longitude
+        let coord2D = CLLocationCoordinate2D(latitude: latitud, longitude: longitud)
+        
+        
+        // amplitud
+        let myLatDelta = 0.05
+        let myLongDelta = 0.05
+        let myAmplitud = MKCoordinateSpan(latitudeDelta: myLatDelta, longitudeDelta: myLongDelta)
+        
+        let myRegion = MKCoordinateRegion(center: coord2D, span: myAmplitud)
+        
+        //centrar mapa en esta region
+        
+        mapa.setRegion(myRegion, animated: true)
+        
+        //poner PIN
+        
+        let pin = MKPointAnnotation()
+        pin.coordinate = coord2D
+        mapa.addAnnotation(pin)
+        pin.title = "Latitud: \(latitud), Longitud \(longitud)" //titulo
+        pin.subtitle="Distancia Recorrida: " //subtitulo
+        
     }
     
-    /*
-    func locationManager(manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) { // recibe las lecturas de la brujula
-        nteMagEtiqueta.text = "\(newHeading.magneticHeading)"
-        nteGeoEtiqueta.text = "\(newHeading.trueHeading)"
-        
-    }*/
     
     
     // se lanza si hay error en lectura
@@ -70,18 +91,30 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         alerta.addAction(accionOK)
         self.presentViewController(alerta, animated: true, completion: nil)
     }
+
     
-    
+
+    @IBAction func cambiarVistaMapa(sender: AnyObject, forEvent event: UIEvent) { // Cambiar tipo de vista de mapa
+        
+        if sender.selectedSegmentIndex == 0{
+            mapa.mapType = .Standard // vista de mapa normal
+        }
+        else if sender.selectedSegmentIndex == 1{
+            mapa.mapType = .Satellite //vista de mapa Satelite
+        }
+        else if sender.selectedSegmentIndex == 2{
+            mapa.mapType = .Hybrid // vista de mapa hibrido
+        }
+    }
     
 
     
+    @IBAction func zoomFuncion(sender: AnyObject, forEvent event: UIEvent) {
+            mapa.zoomEnabled = true
+              
+    }
     
-    
-    
-    
-    
-    
-    
+
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
