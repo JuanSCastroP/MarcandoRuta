@@ -17,7 +17,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     var longitud : String = ""
     var exacHoriz : String = ""
     var distancia : Int = 0
-    let radioRegion: CLLocationDistance = 500
+    let radioRegion: CLLocationDistance = 50
     
     @IBOutlet weak var mostrarLatitud: UILabel!
     @IBOutlet weak var mostrarLongitud: UILabel!
